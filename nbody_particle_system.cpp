@@ -1,14 +1,13 @@
 #include "nbody_particle_system.hpp"
 using namespace nbody;
 
-
 void particle_system::gather() {
-    particle *particle_grabs0[8];
-    particle *particle_grabs1[8];
+    std::unique_ptr<particle> particle_grabs0[8]{nullptr};
+    std::unique_ptr<particle> particle_grabs1[8]{nullptr};
     for (std::uint8_t i = 0; i < 8; i++) {
-        particle_grabs0[i] = _particles.front();
+        std::swap(particle_grabs0[i], _particles.front());
         _particles.pop();
-        particle_grabs1[i] = _particles.front();
+        std::swap(particle_grabs1[i], _particles.front());
         _particles.pop();
 
         assert(!_particles.empty());
@@ -45,50 +44,42 @@ void particle_system::gather() {
     // distance(t0, t1) = sqrt((t1*t1)-(t0*t0))
     auto xd = _mm256_sqrt_ps(_mm256_sub_ps(_mm256_mul_ps(x1, x1), _mm256_mul_ps(x0, x0)));
     auto yd = _mm256_sqrt_ps(_mm256_sub_ps(_mm256_mul_ps(y1, y1), _mm256_mul_ps(y0, y0)));
-    dx0 = _mm256_fmadd_ps(_mm256_mul_pd(dm0, dm1), _mm256_rcp_ps(_mm256_mul_ps(xd, _mm256_set1_ps(force))), dx0);
-    dx1 = _mm256_fmadd_ps(_mm256_mul_pd(dm0, dm1), _mm256_rcp_ps(_mm256_mul_ps(xd, _mm256_set1_ps(force))), dx1);
-    dy0 = _mm256_fmadd_ps(_mm256_mul_pd(dm0, dm1), _mm256_rcp_ps(_mm256_mul_ps(yd, _mm256_set1_ps(force))), dy0);
-    dy1 = _mm256_fmadd_ps(_mm256_mul_pd(dm0, dm1), _mm256_rcp_ps(_mm256_mul_ps(yd, _mm256_set1_ps(force))), dy1);
+    dx0 = _mm256_fmadd_ps(_mm256_mul_ps(dm0, dm1), _mm256_rcp_ps(_mm256_mul_ps(xd, _mm256_set1_ps(force))), dx0);
+    dx1 = _mm256_fmadd_ps(_mm256_mul_ps(dm0, dm1), _mm256_rcp_ps(_mm256_mul_ps(xd, _mm256_set1_ps(force))), dx1);
+    dy0 = _mm256_fmadd_ps(_mm256_mul_ps(dm0, dm1), _mm256_rcp_ps(_mm256_mul_ps(yd, _mm256_set1_ps(force))), dy0);
+    dy1 = _mm256_fmadd_ps(_mm256_mul_ps(dm0, dm1), _mm256_rcp_ps(_mm256_mul_ps(yd, _mm256_set1_ps(force))), dy1);
+    x0 = _mm256_add_ps(x0, dx0);
+    x1 = _mm256_add_ps(x1, dx1);
+    y0 = _mm256_add_ps(y0, dy0);
+    y1 = _mm256_add_ps(y1, dy1);
 }
 
 void particle_system::scatter(particle_clump &&_p0, particle_clump &&_p1) {
     auto p0 = _p0;
     auto p1 = _p1;
-    float *x0 = reinterpret_cast<float *>(_mm_malloc (sizeof(float) * 8, sizeof(char) * 32));
-    float *y0 = reinterpret_cast<float *>(_mm_malloc (sizeof(float) * 8, sizeof(char) * 32));
-    float *dx0 = reinterpret_cast<float *>(_mm_malloc (sizeof(float) * 8, sizeof(char) * 32));
-    float *dy0 = reinterpret_cast<float *>(_mm_malloc (sizeof(float) * 8, sizeof(char) * 32));
-    float *x1 = reinterpret_cast<float *>(_mm_malloc (sizeof(float) * 8, sizeof(char) * 32));
-    float *y1 = reinterpret_cast<float *>(_mm_malloc (sizeof(float) * 8, sizeof(char) * 32));
-    float *dx1 = reinterpret_cast<float *>(_mm_malloc (sizeof(float) * 8, sizeof(char) * 32));
-    float *dy1 = reinterpret_cast<float *>(_mm_malloc (sizeof(float) * 8, sizeof(char) * 32));
-    float *mass0 = reinterpret_cast<float *>(_mm_malloc (sizeof(float) * 8, sizeof(char) * 32));
-    float *mass1 = reinterpret_cast<float *>(_mm_malloc (sizeof(float) * 8, sizeof(char) * 32));
-    _mm256_store_ps (x0, p0.x);
-    _mm256_store_ps (y0, p0.y);
-    _mm256_store_ps (dx0, p0.dx);
-    _mm256_store_ps (dy0, p0.dy);
-    _mm256_store_ps (x1, p1.x);
-    _mm256_store_ps (y1, p1.y);
-    _mm256_store_ps (dx1, p1.dx);
-    _mm256_store_ps (dy1, p1.dy);
-    _mm256_store_ps (mass0, p0.mass);
-    _mm256_store_ps (mass1, p1.mass);
+    auto x0 = reinterpret_cast<float *>(_mm_malloc(sizeof(float) * 8, sizeof(char) * 32));
+    auto y0 = reinterpret_cast<float *>(_mm_malloc(sizeof(float) * 8, sizeof(char) * 32));
+    auto dx0 = reinterpret_cast<float *>(_mm_malloc(sizeof(float) * 8, sizeof(char) * 32));
+    auto dy0 = reinterpret_cast<float *>(_mm_malloc(sizeof(float) * 8, sizeof(char) * 32));
+    auto x1 = reinterpret_cast<float *>(_mm_malloc(sizeof(float) * 8, sizeof(char) * 32));
+    auto y1 = reinterpret_cast<float *>(_mm_malloc(sizeof(float) * 8, sizeof(char) * 32));
+    auto dx1 = reinterpret_cast<float *>(_mm_malloc(sizeof(float) * 8, sizeof(char) * 32));
+    auto dy1 = reinterpret_cast<float *>(_mm_malloc(sizeof(float) * 8, sizeof(char) * 32));
+    auto mass0 = reinterpret_cast<float *>(_mm_malloc(sizeof(float) * 8, sizeof(char) * 32));
+    auto mass1 = reinterpret_cast<float *>(_mm_malloc(sizeof(float) * 8, sizeof(char) * 32));
+    _mm256_store_ps(x0, p0.x);
+    _mm256_store_ps(y0, p0.y);
+    _mm256_store_ps(dx0, p0.dx);
+    _mm256_store_ps(dy0, p0.dy);
+    _mm256_store_ps(x1, p1.x);
+    _mm256_store_ps(y1, p1.y);
+    _mm256_store_ps(dx1, p1.dx);
+    _mm256_store_ps(dy1, p1.dy);
+    _mm256_store_ps(mass0, p0.mass);
+    _mm256_store_ps(mass1, p1.mass);
     for(std::uint8_t i = 0; i < 8; i++) {
-        _particles.emplace(particle{
-                .dx = dx0[i],
-                .dy = dy0[i],
-                .mass = mass0[i],
-                .x = x0[i],
-                .y = y0[i],
-        });
-        _particles.emplace(particle{
-                .dx = dx1[i],
-                .dy = dy1[i],
-                .mass = mass1[i],
-                .x = x1[i],
-                .y = y1[i],
-        });
+        _particles.emplace(new particle{x0[i], dx0[i], y0[i], dy0[i], mass0[i]});
+        _particles.emplace(new particle{x1[i], dx1[i], y1[i], dy1[i], mass1[i]});
     }
     _mm_free(mass1);
     _mm_free(mass0);

@@ -17,14 +17,15 @@
 /** C++ Includes
  *  - initializer_list : makes structs easier
  *  - memory : need *dynamic* allocator that is smart
- *  - queue : need a queue system from STL, got to organized plop out objects
+ *  - new : need errorable allocator
+ *  - queue : need a queue system from STL, got to organize plopping out objects
  *  - random : need to generate random ordinates
  *  - type_traits : specify traits that we should be using
  *  - TODO: threading lib of sorts, by STL
  */
-#include <future>
 #include <initializer_list>
 #include <memory>
+#include <new>
 #include <queue>
 #include <random>
 #include <type_traits>
