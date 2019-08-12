@@ -27,8 +27,8 @@ void framebuffer::init(std::uint16_t width, std::uint16_t height, int flags, std
 
 void framebuffer::deinit() {
     SDL_DestroyTexture(texture);
-    SDL_FreeSurface(surface);
     SDL_DestroyRenderer(renderer);
+    SDL_FreeSurface(surface);
     SDL_DestroyWindow(window);
     delete[] pixels;
 }
@@ -57,9 +57,9 @@ bool framebuffer::poll_and_tick() {
             std::uint32_t oldr = (oldpixels & 0xFF000000) >> 24;
             std::uint32_t oldg = (oldpixels & 0x00FF0000) >> 16;
             std::uint32_t oldb = (oldpixels & 0x0000FF00) >> 8;
-            oldr = oldr * 0.99f;
-            oldg = oldg * 0.99f;
-            oldb = oldb * 0.99f;
+            oldr = oldr * 0.9f;
+            oldg = oldg * 0.9f;
+            oldb = oldb * 0.9f;
             pixels[(i * w) + j] = (oldr << 24) | (oldg << 16) | (oldb << 8) | 0x000000FF;
         }
     }

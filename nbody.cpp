@@ -12,6 +12,8 @@ int main(int argc, const char *argv[]) {
     while (nbody::framebuffer::poll_and_tick())
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     nbody::framebuffer::deinit();
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
     return EXIT_SUCCESS;
 }

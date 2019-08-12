@@ -11,19 +11,17 @@ bool particle_system::step(std::size_t stride) {
     float particles_dy[9]{0.0f};
 
     for(std::uint8_t i = 0; i < 9; i++) {
-        while(!single_file.try_lock())
-            std::this_thread::sleep_for(std::chrono::microseconds(1));
+        while(!_single_file.try_lock());
         auto j = _particles.at(stride).front().get();
-        single_file.unlock();
+        _single_file.unlock();
         particles_mass[i] = j->mass;
         particles_x[i] = j->x;
         particles_dx[i] = j->dx;
         particles_y[i] = j->y;
         particles_dy[i] = j->dy;
-        while(!single_file.try_lock())
-            std::this_thread::sleep_for(std::chrono::microseconds(1));
+        while(!_single_file.try_lock());
         _particles.at(stride).pop_front();
-        single_file.unlock();
+        _single_file.unlock();
     }
 
     auto leader_x = _mm256_set1_ps(particles_x[0]);
@@ -40,8 +38,8 @@ bool particle_system::step(std::size_t stride) {
     auto v_dx = _mm256_loadu_ps(particles_dx + 1);
     auto v_dy = _mm256_loadu_ps(particles_dy + 1);
     auto v_force = _mm256_set1_ps(force);
-    // Do the calculations now.
 
+    // Do the calculations now.
     auto v_ord_x = _mm256_sub_ps(v_x, leader_x);
     auto v_ord_y = _mm256_sub_ps(v_y, leader_y);
     v_dx = _mm256_fmadd_ps(v_force, _mm256_mul_ps(leader_mass, v_ord_x), v_dx);
@@ -67,28 +65,27 @@ bool particle_system::step(std::size_t stride) {
     _mm256_storeu_ps(particles_dy + 1, v_dy);
 
     for(std::uint8_t i = 0; i < 9; i++) {
-        while(!single_file.try_lock())
-            std::this_thread::sleep_for(std::chrono::microseconds(1));
+        while(!_single_file.try_lock());
         auto j = new particle {
-                particles_x[i],
+                fmodf(particles_x[i], static_cast<float>(_w)),
                 particles_dx[i],
-                particles_y[i],
+                fmodf(particles_y[i], static_cast<float>(_h)),
                 particles_dy[i],
                 particles_mass[i]
         };
         _late_particles.emplace(j);
 
-        single_file.unlock();
+        _single_file.unlock();
     }
 
     return true;
 }
 
-particle_system::particle_system(std::size_t num_particles, std::uint16_t w, std::uint16_t h) : _rand(new randomiser<float>{}){
+particle_system::particle_system(std::size_t num_particles, std::uint16_t w, std::uint16_t h) : _rand(new randomiser<float>{}), _w(w), _h(h) {
     auto i = num_particles;
     while(i--) {
         auto p = new particle {
-                _rand->shake(static_cast<float>(w)/16.0f), 0.0f, _rand->shake(static_cast<float>(h)/16.0f),  0.0f, fabsf(_rand->shake(32.0f))
+                _rand->shake(static_cast<float>(w)/4.0f), 0.0f, _rand->shake(static_cast<float>(h)/4.0f),  0.0f, fabsf(_rand->shake(32.0f))
         };
         _late_particles.emplace(p);
     }
