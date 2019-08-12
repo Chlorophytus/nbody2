@@ -3,7 +3,9 @@
 
 int main(int argc, const char *argv[]) {
     // Do logic. If we can't then assert and die.
-    auto particle_groups = 128;
+    auto particle_groups = 64;
+    if(argc == 2)
+        particle_groups = atoi(argv[1]);
     particle_groups *= 9;
     particle_groups *= std::thread::hardware_concurrency();
     std::fprintf(stdout, "NBody2 v0.1.0 by Roland Metivier\n");
@@ -12,8 +14,8 @@ int main(int argc, const char *argv[]) {
     while (nbody::framebuffer::poll_and_tick())
         ;
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     nbody::framebuffer::deinit();
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
     return EXIT_SUCCESS;
 }
