@@ -10,12 +10,12 @@ namespace nbody {
      */
     template <typename T>
     class randomiser {
-        std::unique_ptr<std::random_device> _rd{};
+        std::unique_ptr<std::random_device> _rd;
         std::unique_ptr<std::uniform_real_distribution<T>> _real_distribution{nullptr};
         static_assert(std::is_floating_point<T>::value, "nbody::randomiser - T isn't a real type");
     public:
         randomiser();
-        T operator()();
+        T shake(T);
     };
 }
 

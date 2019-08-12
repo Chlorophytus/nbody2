@@ -2,6 +2,7 @@
 #define NBODY2_NBODY_FRAMEBUFFER_HPP
 
 #include "nbody.hpp"
+#include "nbody_particle_system.hpp"
 
 namespace nbody {
     namespace framebuffer {
@@ -9,7 +10,7 @@ namespace nbody {
          *  - init(), deinit() : make and destroy the singleton
          *  - poll_and_tick() : if this returns true then the application should quit
          */
-        void init(std::uint16_t, std::uint16_t, int);
+        void init(std::uint16_t, std::uint16_t, int, std::size_t);
 
         bool poll_and_tick();
 

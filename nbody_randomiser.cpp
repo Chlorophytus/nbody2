@@ -1,10 +1,10 @@
 #include "nbody_randomiser.hpp"
 using namespace nbody;
 
-template <typename T> randomiser<T>::randomiser() {
-    _real_distribution.reset(new std::uniform_real_distribution<T>{-1.0f, 1.0f});
+template <> randomiser<float>::randomiser() : _rd(new std::random_device) {
 }
 
-template <typename T> T randomiser<T>::operator()() {
-    return (*_real_distribution)(_rd);
+template <> float randomiser<float>::shake(float scale) {
+    _real_distribution.reset(new std::uniform_real_distribution<float>{-scale, scale});
+    return (*_real_distribution)((*_rd));
 }

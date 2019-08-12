@@ -22,7 +22,8 @@
  *  - random : need to generate random ordinates
  *  - type_traits : specify traits that we should be using
  *  - vector : for the particleviews
- *  - TODO: threading lib of sorts, by STL
+ *  - forward_list : particle groups to pivot
+ *  - thread : do threaded stuff
  */
 #include <initializer_list>
 #include <memory>
@@ -31,6 +32,8 @@
 #include <random>
 #include <type_traits>
 #include <vector>
+#include <forward_list>
+#include <thread>
 
 /** Other Miscellaneous */
 
