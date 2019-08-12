@@ -24,6 +24,7 @@
  *  - vector : for the particleviews
  *  - forward_list : particle groups to pivot
  *  - thread : do threaded stuff
+ *  - mutex : single filing the threads
  */
 #include <initializer_list>
 #include <memory>
@@ -34,6 +35,7 @@
 #include <vector>
 #include <forward_list>
 #include <thread>
+#include <mutex>
 
 /** Other Miscellaneous */
 

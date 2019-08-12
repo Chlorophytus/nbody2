@@ -1,7 +1,6 @@
 #ifndef NBODY2_NBODY_PARTICLE_SYSTEM_HPP
 #define NBODY2_NBODY_PARTICLE_SYSTEM_HPP
 
-#include <mutex>
 #include "nbody.hpp"
 #include "nbody_randomiser.hpp"
 #include "nbody_particle.hpp"
