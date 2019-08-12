@@ -25,7 +25,7 @@ namespace nbody {
         std::uint16_t _w, _h;
     public:
         static bool compare_two_particles(const std::unique_ptr<particle> &, const std::unique_ptr<particle> &);
-        constexpr static float force = -0.00001f;
+        constexpr static float force = -0.0001f;
         explicit particle_system(std::size_t, std::uint16_t, std::uint16_t);
         bool step(std::size_t);
         std::vector<particle *> stir();
