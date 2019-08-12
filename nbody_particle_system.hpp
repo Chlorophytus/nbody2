@@ -9,20 +9,22 @@ namespace nbody {
     /** A particle system contains particles and handles making them
      *  - _rand = a randomiser that is dynamic
      *  - _particles = a job queue of particles that need to be rendered
+     *  - _late_particles = all particles that have been rendered
      *
-     *  - gather() : gather particles into clumps
-     *  - scatter() : scatter particle clumps into particles
+     *  - constructor : initialise the particle system with this many particles
+     *  - step() : returns if all particle steps have been exhausted
+     *  - stir() : redo the particle system, allowing us to step again
      */
     class particle_system {
         std::unique_ptr<randomiser<float>> _rand;
+        std::queue<std::unique_ptr<particle>> _late_particles{};
         std::queue<std::unique_ptr<particle>> _particles{};
 
     public:
         constexpr static float force = 1.0f;
-
-        void gather();
-
-        void scatter(particle_clump &&, particle_clump &&);
+        explicit particle_system(std::size_t);
+        bool step();
+        std::vector<particle *> stir();
     };
 }
 

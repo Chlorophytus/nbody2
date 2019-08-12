@@ -21,6 +21,7 @@
  *  - queue : need a queue system from STL, got to organize plopping out objects
  *  - random : need to generate random ordinates
  *  - type_traits : specify traits that we should be using
+ *  - vector : for the particleviews
  *  - TODO: threading lib of sorts, by STL
  */
 #include <initializer_list>
@@ -29,6 +30,7 @@
 #include <queue>
 #include <random>
 #include <type_traits>
+#include <vector>
 
 /** Other Miscellaneous */
 
