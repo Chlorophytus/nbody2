@@ -50,7 +50,17 @@ bool framebuffer::poll_and_tick() {
     auto particle_view = particles->stir();
     for(std::uint16_t i = 0; i < h; i++) {
         for(std::uint16_t j = 0; j < w; j++) {
-            pixels[(i * w) + j] = 0x00000000;
+            auto oldpixels = pixels[(i * w) + j];
+            if(oldpixels == 0x00000000) {
+                continue;
+            }
+            std::uint32_t oldr = (oldpixels & 0xFF000000) >> 24;
+            std::uint32_t oldg = (oldpixels & 0x00FF0000) >> 16;
+            std::uint32_t oldb = (oldpixels & 0x0000FF00) >> 8;
+            oldr = oldr * 0.99f;
+            oldg = oldg * 0.99f;
+            oldb = oldb * 0.99f;
+            pixels[(i * w) + j] = (oldr << 24) | (oldg << 16) | (oldb << 8) | 0x000000FF;
         }
     }
     for(auto &&i : particle_view) {
@@ -60,7 +70,7 @@ bool framebuffer::poll_and_tick() {
         y += h / 2;
         x %= w;
         y %= h;
-        pixels[(y * w) + x] = 0xFFFFFFFF;
+        pixels[(y * w) + x] = 0xFF0000FF | (static_cast<std::uint8_t>(i->mass * 8.0f) << 8);
     }
     SDL_UpdateTexture(texture, nullptr, pixels, static_cast<int>(sizeof(std::uint32_t) * w));
     SDL_RenderCopy(renderer, texture, nullptr, nullptr);

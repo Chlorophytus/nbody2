@@ -88,7 +88,7 @@ particle_system::particle_system(std::size_t num_particles, std::uint16_t w, std
     auto i = num_particles;
     while(i--) {
         auto p = new particle {
-                _rand->shake(static_cast<float>(w)/4.0f), 0.0f, _rand->shake(static_cast<float>(h)/4.0f),  0.0f, 1.0f
+                _rand->shake(static_cast<float>(w)/16.0f), 0.0f, _rand->shake(static_cast<float>(h)/16.0f),  0.0f, fabsf(_rand->shake(32.0f))
         };
         _late_particles.emplace(p);
     }
