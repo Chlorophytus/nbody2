@@ -2,7 +2,13 @@
 
 using namespace nbody;
 
-void framebuffer::init(std::uint16_t width, std::uint16_t height, SDL_WindowFlags flags) {
+static std::uint32_t *pixels;
+static SDL_Window *window;
+static SDL_Renderer *renderer;
+static SDL_Surface *surface;
+static SDL_Texture *texture;
+
+void framebuffer::init(std::uint16_t width, std::uint16_t height, int flags) {
     // Check if pointers aren't null
     assert(SDL_CreateWindowAndRenderer(width, height, 0, &window, &renderer) == 0);
     assert(window);
