@@ -10,7 +10,7 @@ namespace nbody {
          *  - init(), deinit() : make and destroy the singleton
          *  - poll_and_tick() : if this returns true then the application should quit
          */
-        void init(std::uint16_t, std::uint16_t, int, std::size_t);
+        void init(std::uint16_t, std::uint16_t, int, std::uint32_t);
 
         bool poll_and_tick();
 
